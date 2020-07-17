@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>push</title>
+
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+<body>
+<input type="text" class="message">
+<button type="button" class="send">发送</button>
+
+<ul class="message_list">
+
+</ul>
+</body>
+
+<script>
+    $(function () {
+        let sign = encodeURI("VURxMi9KZk9LVW5Dd1pOeTg5cldnVjZyUS95Q3lwMHp4ZXljSE9adnN5cz0=");
+        let ws = new WebSocket("ws://127.0.0.1:3000/wsPushMessage?app_key=test2&sign="+sign+"&writeChannel=channel01");
+        ws.onopen = function() {
+            console.log("client：打开连接");
+        };
+        ws.onmessage = function(e) {
+            console.log('接受到消息:' + e.data);
+        };
+
+        ws.onclose = function(params) {
+            console.log("client：关闭连接");
+        };
+
+        $('.send').click(function(){
+            let val = $('.message').val();
+            //['事件名', 真正要发送的数据]
+
+            for (let i = 0; i < 1000; i++){
+                let event = ['accept',{
+                    content:val + i
+                }];
+                ws.send(JSON.stringify(event));
+            }
+            let str = '<li>'+val+'</li>'
+            $('.message_list').append(str);
+        });
+    })
+</script>
+</html>
